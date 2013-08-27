@@ -1,0 +1,41 @@
+@(message: String)(implicit request: RequestHeader)
+
+@main("Welcome to WebSockets test app") {
+<div>@message</div>
+
+<form id="chatform">
+  <input id="text" placeholder="Say something..."/>
+  <button type="submit">Send</button>
+</form>
+
+<ul id="messages"></ul>
+
+<script type="text/javascript">
+  $(function() {
+
+  $('#text').val("").focus()
+  ws = new WebSocket("@com.originate.play.websocket.routes.WebSockets.init.webSocketURL()")
+
+  ws.onmessage = function(msg) {
+    $('<li/>').text(msg.data).appendTo('#messages')
+  }
+
+  ws.onopen = function() {
+    $('<li/>').text("=== connected ===").appendTo('#messages')
+    ws.send("Hey from the client!");
+  };
+
+  ws.onclose = function() {
+    $('<li/>').text("--- disconnected --- ").appendTo('#messages')
+  };
+
+
+  $('#chatform').submit(function(){
+      ws.send($('#text').val())
+      $('#text').val("").focus()
+      return false;
+  })
+
+  })
+</script>
+}

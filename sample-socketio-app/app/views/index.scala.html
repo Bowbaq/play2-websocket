@@ -1,0 +1,49 @@
+@(message: String)(implicit request: RequestHeader)
+
+@main("Welcome to SocketIo test app") {
+<div>@message</div>
+
+<form id="chatform">
+  <input id="text" placeholder="Say something..."/>
+  <button type="submit">Send</button>
+</form>
+
+<ul id="messages"></ul>
+
+<script type="text/javascript">
+  $(function() {
+
+  $('#text').val("").focus()
+
+  socket = io.connect();
+  socket.on('connect', function () {
+    $('<li/>').text("connected").appendTo('#messages')
+    socket.emit('message', 'hi!', function (data) {
+      $('<li/>').text('hi! sent').appendTo('#messages')
+    });
+  });
+  socket.emit('json', '{my: hi2!}');
+
+  socket.on('json', function(data){
+    $('<li/>').text('json -> ' + data).appendTo('#messages')
+  });
+
+  socket.on('event', function(data){
+    $('<li/>').text('event -> ' + data).appendTo('#messages')
+  });
+
+  socket.on('message', function(data){
+    $('<li/>').text('message -> ' + data).appendTo('#messages')
+  });
+
+  $('#chatform').submit(
+    function(){
+      socket.emit('message', $('#text').val(), function (data) {
+        $('<li/>').text("sent: " + data).appendTo('#messages')
+      });
+      $('#text').val("").focus()
+      return false;
+    })
+  })
+</script>
+}

@@ -1,0 +1,7 @@
+GET     /                           controllers.Application.index
+GET     /assets/*file               controllers.Assets.at(path="/public", file)
+
+# Socket IO
+GET     /socket.io/1/websocket/$socketUrl<.*> com.originate.play.websocket.socketio.SocketIo.init(socketUrl)
+GET     /socket.io/1/$socketUrl<.*>           com.originate.play.websocket.socketio.SocketIo.initSession(socketUrl)
+POST    /socket.io/1/$socketUrl<.*>           com.originate.play.websocket.socketio.SocketIo.initSession(socketUrl)

@@ -1,0 +1,4 @@
+7510:plugins.ClientInformationProviderPluginImpl
+7520:plugins.ConnectionRegistrarPluginImpl
+7530:com.originate.play.websocket.socketio.WebSocketHooksPluginImpl
+7540:plugins.SocketIoHooksPluginImpl
