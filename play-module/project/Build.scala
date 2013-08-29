@@ -27,6 +27,7 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     organization := "com.originate",
+    description  := "Scalable resilient websocket and socket-io messaging module for Scala Play 2 for cloud environments.",
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     publishTo <<= version { (v: String) =>
       val nexus = "https://oss.sonatype.org/"

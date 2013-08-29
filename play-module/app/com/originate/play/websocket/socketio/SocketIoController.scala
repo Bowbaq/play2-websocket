@@ -19,6 +19,7 @@ import play.api.mvc.{Controller, WebSocket, AnyContent, Action}
 import com.originate.play.websocket.plugins.ClientInformationProviderComponent
 import com.originate.play.websocket.WebSockets
 import play.api.Logger
+import scala.concurrent.duration._
 
 trait SocketIoController extends Controller {
   def init(socketUrl: String): WebSocket[String]
@@ -48,15 +49,15 @@ trait SocketIoControllerComponentImpl
 
         val sessionId = clientInfo.clientId
         Logger.info(s"SocketIo session is being initiated: $sessionId [$clientInfo]")
-        val heartbeatMs = socketIoConfig.getMilliseconds("heartbeat.interval") getOrElse {
+        val heartbeatInterval = socketIoConfig.getDuration("heartbeat.interval") getOrElse {
           Logger.warn("Cannot find 'heartbeat.interval' parameter in socketio config, using 30 sec")
-          30 * 1000L
+          30.seconds
         }
-        val connectionTimeoutMs = socketIoConfig.getMilliseconds("connection.timeout") getOrElse {
+        val connectionTimeout = socketIoConfig.getDuration("connection.timeout") getOrElse {
           Logger.warn("Cannot find 'connection.timeout' parameter in socketio config, using 10 min")
-          10 * 60 * 1000L
+          10.minutes
         }
-        Ok(s"$sessionId:${heartbeatMs / 1000}:${connectionTimeoutMs / 1000}:websocket")
+        Ok(s"$sessionId:${heartbeatInterval.toSeconds}:${connectionTimeout.toSeconds}:websocket")
     }
   }
 

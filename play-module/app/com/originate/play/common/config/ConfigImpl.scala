@@ -20,6 +20,7 @@ import play.api.{Configuration, Play}
 import collection.JavaConversions._
 import com.typesafe.config.ConfigFactory
 import com.originate.common.config.{ConfigComponent, Config}
+import org.joda.time.Duration
 
 trait ConfigComponentImpl extends ConfigComponent {
   lazy val config: Config = new ConfigImpl

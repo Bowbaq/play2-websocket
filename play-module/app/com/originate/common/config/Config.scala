@@ -16,6 +16,9 @@
 package com.originate.common.config
 
 import com.originate.common.BaseComponent
+import org.joda.time.Interval
+import scala.concurrent.duration.Duration
+import java.util.concurrent.TimeUnit
 
 trait Config {
   def getBoolean(path: String): Option[Boolean]
@@ -37,6 +40,9 @@ trait Config {
   def withFallback(fallbackConfig: Config): Config
 
   def hasPath(path: String): Boolean
+
+  def getDuration(path: String): Option[Duration] =
+    getMilliseconds(path) map (Duration.create(_, TimeUnit.MILLISECONDS))
 }
 
 trait ConfigComponent extends BaseComponent {
