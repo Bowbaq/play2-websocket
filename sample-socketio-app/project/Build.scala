@@ -12,11 +12,12 @@ object ApplicationBuild extends Build {
     "com.typesafe.slick" %% "slick" % "1.0.0",
     "com.typesafe.akka" %% "akka-remote" % "2.1.2",
     "mysql" % "mysql-connector-java" % "5.1.6",
-    "com.originate" %% "play2-websocket" % "1.0-SNAPSHOT"
+    "com.originate" %% "play2-websocket" % "1.0.1-SNAPSHOT"
   )
 
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
+    resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "com.originate"
   )

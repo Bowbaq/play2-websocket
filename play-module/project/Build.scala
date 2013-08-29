@@ -19,19 +19,42 @@ import Keys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-websocket"
-  val appVersion      = "1.0-SNAPSHOT"
+  val appVersion      = "1.0.1-SNAPSHOT"
 
   val appDependencies = Seq(
     "com.typesafe.akka" %% "akka-remote" % "2.1.2"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    publishTo := Some(Resolver.file("Local repository",
-      // TODO(dtarima): is there a way to avoid absolute path?
-      file("/home/dtarima/devel/tools/sdk/play-2.1.3/repository/local"))(Resolver.ivyStylePatterns)),
-    publishMavenStyle := false,
+    organization := "com.originate",
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
-    organization := "com.originate"
+    publishTo <<= version { (v: String) =>
+      val nexus = "https://oss.sonatype.org/"
+      if (v.trim.endsWith("SNAPSHOT"))
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    },
+    publishMavenStyle := true,
+    pomIncludeRepository := { _ => false },
+    pomExtra := (
+  <url>https://github.com/Originate/play2-websocket</url>
+  <licenses>
+    <name>The Apache Software License, Version 2.0</name>
+    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    <distribution>repo</distribution>
+  </licenses>
+  <scm>
+    <url>git@github.com:Originate/play2-websocket.git</url>
+    <connection>scm:git@github.com:Originate/play2-websocket.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>dtarima</id>
+      <name>Denis Tarima</name>
+      <url>http://originate.com</url>
+    </developer>
+  </developers>)
   )
 
 }
