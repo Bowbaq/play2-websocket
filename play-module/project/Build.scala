@@ -28,7 +28,7 @@ object ApplicationBuild extends Build {
   val main = play.Project(appName, appVersion, appDependencies).settings(
     publishTo := Some(Resolver.file("Local repository",
       // TODO(dtarima): is there a way to avoid absolute path?
-      file("/home/dtarima/devel/tools/sdk/play-2.1.1/repository/local"))(Resolver.ivyStylePatterns)),
+      file("/home/dtarima/devel/tools/sdk/play-2.1.3/repository/local"))(Resolver.ivyStylePatterns)),
     publishMavenStyle := false,
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     organization := "com.originate"

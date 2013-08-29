@@ -10,7 +10,9 @@ Software versions
 -----------------
 Scala 2.10
 
-Play 2.1.1
+Play 2.1.3
+
+Akka 2.1.2
 
 Socket.io.js 0.9.16
 

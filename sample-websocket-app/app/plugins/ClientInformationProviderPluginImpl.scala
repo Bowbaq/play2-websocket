@@ -23,10 +23,10 @@ import play.api.Logger
 class ClientInformationProviderPluginImpl(val app: play.Application)
     extends ClientInformationProviderPlugin {
   def getClientInfo(implicit request: RequestHeader): Option[ClientInfo] = {
-    Logger.info(s"ConnectionRegistrarPlugin: ClientInfo requested")
+    Logger.info(s"${getClass.getSimpleName}: ClientInfo requested")
 
     request.session.get("s") map (sessionId => {
-      ClientInfo("any_fake_user_id", sessionId)
+      ClientInfo("a_user_id", sessionId)
     })
   }
 

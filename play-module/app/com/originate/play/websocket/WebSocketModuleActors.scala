@@ -26,12 +26,14 @@ import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.iteratee.Concurrent
 import akka.util.Timeout
+import play.api.libs.concurrent.Akka
+import play.api.Play.current
 
 trait WebSocketModuleActorsComponent extends BaseComponent {
   val webSocketModuleActors: WebSocketModuleActors
 
   trait WebSocketModuleActors {
-    val actorSystemAddress: Address
+    def actorSystemAddress: Address
 
     def findActor(actorAddress: String): ActorRef
 
@@ -45,10 +47,7 @@ trait WebSocketModuleActorsComponentImpl extends WebSocketModuleActorsComponent 
 
   val webSocketModuleActors: WebSocketModuleActors = new WebSocketModuleActorsImpl
 
-  lazy val actorSystem = {
-    val actorSystemName = webSocketConfig.getString("actor.system.name") getOrElse "WebSocketModule"
-    ActorSystem(actorSystemName).asInstanceOf[ExtendedActorSystem]
-  }
+  def actorSystem = Akka.system.asInstanceOf[ExtendedActorSystem]
 
   case object Stop
 
@@ -65,14 +64,14 @@ trait WebSocketModuleActorsComponentImpl extends WebSocketModuleActorsComponent 
         // TODO(dtarima): do we need the ack? if yes then should it be a class with specific Stop message (unique)
         sender ! Ack
       case x =>
-        Logger.warn(s"Message received: $x [pushing to $connectionId]")
+        Logger.info(s"Message received: $x [pushing to $connectionId]")
         channel.push(x.toString)
     }
   }
 
   class WebSocketModuleActorsImpl extends WebSocketModuleActors {
 
-    lazy val actorSystemAddress = actorSystem.provider match {
+    def actorSystemAddress = actorSystem.provider match {
       case rarp: RemoteActorRefProvider => rarp.transport.address
       case _ => actorSystem.provider.rootPath.address
     }
@@ -121,17 +120,5 @@ trait WebSocketModuleActorsComponentImpl extends WebSocketModuleActorsComponent 
     }
 
     super.onInit()
-  }
-
-  override def onShutdown() {
-    super.onShutdown()
-
-    try {
-      actorSystem.shutdown()
-    } catch {
-      case e: Throwable =>
-        Logger.error("Failed to shutdown WebSocketModule ActorSystem", e)
-        throw e
-    }
   }
 }

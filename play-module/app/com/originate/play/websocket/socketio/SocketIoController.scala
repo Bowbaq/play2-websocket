@@ -47,14 +47,14 @@ trait SocketIoControllerComponentImpl
             throw new Exception("Cannot initialize SocketIo connection without client Id"))
 
         val sessionId = clientInfo.clientId
-        Logger.info(s"initSession: $sessionId")
+        Logger.info(s"SocketIo session is being initiated: $sessionId [$clientInfo]")
         val heartbeatMs = socketIoConfig.getMilliseconds("heartbeat.interval") getOrElse {
           Logger.warn("Cannot find 'heartbeat.interval' parameter in socketio config, using 30 sec")
-          30000L
+          30 * 1000L
         }
         val connectionTimeoutMs = socketIoConfig.getMilliseconds("connection.timeout") getOrElse {
-          Logger.warn("Cannot find 'connection.timeout' parameter in socketio config, using 10 sec")
-          10000L
+          Logger.warn("Cannot find 'connection.timeout' parameter in socketio config, using 10 min")
+          10 * 60 * 1000L
         }
         Ok(s"$sessionId:${heartbeatMs / 1000}:${connectionTimeoutMs / 1000}:websocket")
     }
