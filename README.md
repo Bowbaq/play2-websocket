@@ -1,10 +1,12 @@
 play2-websocket
 ===============
-Scalable resilient websocket/socket-io messaging module for Scala Play2.
+Scalable resilient websocket/socketio messaging module for Scala Play2.
 
 Status
 -----------------
-Work in progress, not released yet.
+Work in progress, not released yet, but the simplified examples are working.
+
+The latest jars can be found in OSS sonatype repository: https://oss.sonatype.org/index.html#nexus-search;quick~play2-websocket
 
 Software versions
 -----------------
