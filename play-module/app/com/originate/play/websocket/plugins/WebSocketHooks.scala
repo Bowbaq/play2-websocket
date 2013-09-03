@@ -23,6 +23,8 @@ import play.api.libs.iteratee.Enumerator
 trait WebSocketHooks {
   def messageReceivedHook: (ClientConnection, String) => Unit
 
+  def messageSentHook: (ClientConnection, String) => Unit
+
   def connectionEstablishedHook: (ClientConnection, Enumerator[String]) => Enumerator[String]
 }
 

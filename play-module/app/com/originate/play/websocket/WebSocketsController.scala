@@ -21,6 +21,11 @@ import play.api.Logger
 import java.util.UUID
 import com.originate.play.websocket.plugins.{ClientInformationProviderComponent, WebSocketHooksComponent, ConnectionRegistrarComponent}
 import com.originate.utils.SystemInfo
+import scala.concurrent.duration._
+import akka.actor.ActorRef
+import akka.pattern.ask
+import play.api.libs.concurrent.Execution.Implicits._
+import akka.util.Timeout
 
 trait WebSocketsController
     extends Controller {
@@ -50,12 +55,13 @@ trait WebSocketsControllerComponentImpl
         val clientInfo = clientInformationProvider.getClientInfo getOrElse (
             throw new Exception("Cannot create a WebSocket connection without client Id"))
 
-        val clientId = clientInfo.clientId
         val connectionId = UUID.randomUUID().toString
         val (outEnumerator, channel) = Concurrent.broadcast[String]
-        val connectionActor = webSocketModuleActors.newActor(clientId, connectionId, channel)
         val actorAddress = s"${webSocketModuleActors.actorSystemAddress}/user/$connectionId"
+
         val connection = ClientConnection(clientInfo, connectionId, actorAddress)
+        val connectionActorRef = webSocketModuleActors.newActor(connection, channel)
+
         Logger.info(s"WebSocket init $connection called from ${request.headers.get("X-Forwarded-For")}")
 
         val in = Iteratee.foreach[String] {
@@ -65,15 +71,31 @@ trait WebSocketsControllerComponentImpl
             receive(connection, msg)
         }.mapDone {
           _ =>
-            Logger.info(s"Client disconnected $connection")
-            connectionActor.shutdown()
             connectionRegistrar.deregister(connection)
+            shutdown(connection, connectionActorRef)
+            Logger.info(s"Client disconnected $connection")
         }
 
         connectionRegistrar.register(connection)
 
         val finalOutEnumerator = webSocketHooks.connectionEstablishedHook(connection, outEnumerator)
         (in, finalOutEnumerator)
+    }
+
+    def shutdown(connection: ClientConnection, connectionActorRef: ActorRef) {
+      val timeoutDuration = webSocketConfig.getDuration("connection.stop.timeout") getOrElse {
+        Logger.warn("Cannot find 'connection.stop.timeout' parameter in websocket config, using 5 sec")
+        5.seconds
+      }
+
+      implicit val timeout = Timeout(timeoutDuration)
+
+      connectionActorRef ? Stop map {
+        case Ack => Logger.info(s"Actor stopping acknowledged $connection")
+      } onFailure {
+        // TODO(dtarima): it would leak, but is it possible?
+        case _ => Logger.error(s"Actor failed to stop $connection")
+      }
     }
   }
 

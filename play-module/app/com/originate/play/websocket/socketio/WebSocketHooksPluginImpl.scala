@@ -16,12 +16,17 @@
 package com.originate.play.websocket.socketio
 
 import com.originate.play.websocket.plugins.WebSocketHooksPlugin
-import com.originate.play.websocket.{ComponentRegistry, ClientConnection}
+import com.originate.play.websocket.{WebSocketSender, ComponentRegistry, ClientConnection}
 import play.api.Logger
 import play.api.libs.iteratee.Enumerator
+import scala.concurrent.duration._
+import java.util.concurrent.TimeUnit
 
 class WebSocketHooksPluginImpl(val app: play.Application)
     extends WebSocketHooksPlugin {
+  val connectPacketData = Connect().serialize()
+  val heartbeatPacketData = Heartbeat.serialize()
+
   def messageReceivedHook: (ClientConnection, String) => Unit = {
     (connection: ClientConnection, message: String) =>
       Logger.info(s"WebSocketHooksPlugin: packet received: $connection packet=$message")
@@ -41,9 +46,27 @@ class WebSocketHooksPluginImpl(val app: play.Application)
       }
   }
 
-  val connectPacketData = Connect().serialize() // "1:::"
+  def messageSentHook: (ClientConnection, String) => Unit = {
+    (connection: ClientConnection, message: String) =>
+      SocketIoPacket(message) match {
+        case Heartbeat => scheduleOneHeartbeat(connection)
+        case _ => // do nothing
+      }
+
+  }
 
   override def connectionEstablishedHook: (ClientConnection, Enumerator[String]) => Enumerator[String] = {
-    (connection, outEnumerator) => Enumerator(connectPacketData) >>> outEnumerator
+    (connection, outEnumerator) =>
+      scheduleOneHeartbeat(connection)
+      Enumerator(connectPacketData) >>> outEnumerator
+  }
+
+  def scheduleOneHeartbeat(connection: ClientConnection) {
+    val heartbeatInterval = ComponentRegistry.main.socketIoConfig.getDuration("heartbeat.interval") getOrElse {
+      Logger.warn("Cannot find 'heartbeat.interval' parameter in socketio config, using 30 sec")
+      30.seconds
+    }
+    val shorterHeartbeatInterval = Duration.create(Math.round(heartbeatInterval.toMillis * .8), TimeUnit.MILLISECONDS)
+    WebSocketSender.scheduleOnce(shorterHeartbeatInterval, connection.connectionId, heartbeatPacketData)
   }
 }

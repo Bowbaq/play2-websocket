@@ -16,8 +16,7 @@
 package com.originate.common.config
 
 import com.originate.common.BaseComponent
-import org.joda.time.Interval
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{FiniteDuration, Duration}
 import java.util.concurrent.TimeUnit
 
 trait Config {
@@ -41,7 +40,7 @@ trait Config {
 
   def hasPath(path: String): Boolean
 
-  def getDuration(path: String): Option[Duration] =
+  def getDuration(path: String): Option[FiniteDuration] =
     getMilliseconds(path) map (Duration.create(_, TimeUnit.MILLISECONDS))
 }
 

@@ -15,7 +15,12 @@
 */
 package com.originate.play.websocket
 
+import scala.concurrent.duration.FiniteDuration
+
 object WebSocketSender extends WebSocketMessageSender {
   def send(connectionId: String, message: String): Unit =
     ComponentRegistry.main.webSocketMessageSender.send(connectionId, message)
+
+  def scheduleOnce(delay: FiniteDuration, connectionId: String, message: String): Unit =
+    ComponentRegistry.main.webSocketMessageSender.scheduleOnce(delay, connectionId, message)
 }

@@ -16,11 +16,16 @@
 package com.originate.play.websocket
 
 import com.originate.play.websocket.plugins.ConnectionRegistrarComponent
+import scala.concurrent.duration.FiniteDuration
+import play.api.libs.concurrent.Execution.Implicits._
+import play.api.Logger
 
 trait WebSocketMessageSender {
   // TODO(dtarima): return status of sending the message? (we don't want to expose the actor too much)
   // TODO(dtarima): add sendAsk method?
   def send(connectionId: String, message: String): Unit
+
+  def scheduleOnce(delay: FiniteDuration, connectionId: String, message: String): Unit
 }
 
 trait WebSocketMessageSenderComponent {
@@ -39,6 +44,15 @@ trait WebSocketMessageSenderComponentImpl extends WebSocketMessageSenderComponen
       connectionRegistrar.find(connectionId) map {
         clientConnection =>
           webSocketModuleActors.findActor(clientConnection.connectionActorUrl) ! message
+      }
+    }
+
+    def scheduleOnce(delay: FiniteDuration, connectionId: String, message: String) {
+      connectionRegistrar.find(connectionId) map {
+        clientConnection =>
+          val actorRef = webSocketModuleActors.findActor(clientConnection.connectionActorUrl)
+          Logger.info(s"Schedule message to send in $delay [$connectionId]: $message")
+          webSocketModuleActors.actorSystem.scheduler.scheduleOnce(delay, actorRef, message)
       }
     }
   }
