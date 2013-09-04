@@ -73,7 +73,23 @@ trait WebSocketModuleActorsComponentImpl extends WebSocketModuleActorsComponent 
       }
     }
 
-    def actorSystem = Akka.system.asInstanceOf[ExtendedActorSystem]
+    lazy val actorSystem = {
+      val timeout = webSocketConfig.getDuration("actor.system.init.timeout") getOrElse {
+        Logger.warn("Cannot find 'actor.system.init.timeout' parameter in websocket config, using 5 sec")
+        5.seconds
+      }
+      try {
+        Await.ready(Future(Akka.system.asInstanceOf[ExtendedActorSystem]), timeout)
+      } catch {
+        case e: TimeoutException =>
+          Logger.error("WebSocketModule ActorSystem failed to initialize during allotted time interval", e)
+          throw e
+        case e: Throwable =>
+          Logger.error("Unexpected error during WebSocketModule ActorSystem initialization", e)
+          throw e
+      }
+      Akka.system.asInstanceOf[ExtendedActorSystem]
+    }
 
     def actorSystemAddress = actorSystem.provider match {
       case rarp: RemoteActorRefProvider => rarp.transport.address
@@ -90,22 +106,4 @@ trait WebSocketModuleActorsComponentImpl extends WebSocketModuleActorsComponent 
     }
   }
 
-  override def onInit() {
-    try {
-      val timeout = webSocketConfig.getDuration("actor.system.init.timeout") getOrElse {
-        Logger.warn("Cannot find 'actor.system.init.timeout' parameter in websocket config, using 5 sec")
-        5.seconds
-      }
-      Await.ready(Future(webSocketModuleActors.actorSystem), timeout)
-    } catch {
-      case e: TimeoutException =>
-        Logger.error("WebSocketModule ActorSystem failed to initialize during allotted time interval", e)
-        throw e
-      case e: Throwable =>
-        Logger.error("Unexpected error during WebSocketModule ActorSystem initialization", e)
-        throw e
-    }
-
-    super.onInit()
-  }
 }
