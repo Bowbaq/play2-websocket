@@ -52,34 +52,36 @@ trait WebSocketsControllerComponentImpl
 
     def init = WebSocket.using[String] {
       implicit request =>
-        val clientInfo = clientInformationProvider.getClientInfo getOrElse (
-            throw new Exception("Cannot create a WebSocket connection without client Id"))
+        clientInformationProvider.getClientInfo map {
+          clientInfo =>
+            val connectionId = UUID.randomUUID().toString
+            val (outEnumerator, channel) = Concurrent.broadcast[String]
+            val actorAddress = s"${webSocketModuleActors.actorSystemAddress}/user/$connectionId"
 
-        val connectionId = UUID.randomUUID().toString
-        val (outEnumerator, channel) = Concurrent.broadcast[String]
-        val actorAddress = s"${webSocketModuleActors.actorSystemAddress}/user/$connectionId"
+            val connection = ClientConnection(clientInfo, connectionId, actorAddress)
+            val connectionActorRef = webSocketModuleActors.newActor(connection, channel)
 
-        val connection = ClientConnection(clientInfo, connectionId, actorAddress)
-        val connectionActorRef = webSocketModuleActors.newActor(connection, channel)
+            Logger.info(s"WebSocket init $connection called from ${request.headers.get("X-Forwarded-For")}")
 
-        Logger.info(s"WebSocket init $connection called from ${request.headers.get("X-Forwarded-For")}")
+            val in = Iteratee.foreach[String] {
+              msg =>
+                Logger.info(s"Message received $connection: $msg")
+                val receive = webSocketHooks.messageReceivedHook
+                receive(connection, msg)
+            }.mapDone {
+              _ =>
+                connectionRegistrar.deregister(connection)
+                shutdown(connection, connectionActorRef)
+                Logger.info(s"Client disconnected $connection")
+            }
 
-        val in = Iteratee.foreach[String] {
-          msg =>
-            Logger.info(s"Message received $connection: $msg")
-            val receive = webSocketHooks.messageReceivedHook
-            receive(connection, msg)
-        }.mapDone {
-          _ =>
-            connectionRegistrar.deregister(connection)
-            shutdown(connection, connectionActorRef)
-            Logger.info(s"Client disconnected $connection")
+            connectionRegistrar.register(connection)
+
+            val finalOutEnumerator = webSocketHooks.connectionEstablishedHook(connection, outEnumerator)
+            (in, finalOutEnumerator)
+        } getOrElse {
+          throw new Exception("Cannot create a WebSocket connection without client Id")
         }
-
-        connectionRegistrar.register(connection)
-
-        val finalOutEnumerator = webSocketHooks.connectionEstablishedHook(connection, outEnumerator)
-        (in, finalOutEnumerator)
     }
 
     def shutdown(connection: ClientConnection, connectionActorRef: ActorRef) {

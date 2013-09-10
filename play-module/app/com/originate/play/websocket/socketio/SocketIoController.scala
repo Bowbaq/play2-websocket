@@ -44,20 +44,22 @@ trait SocketIoControllerComponentImpl
 
     def initSession(socketUrl: String) = Action {
       implicit request =>
-        val clientInfo = clientInformationProvider.getClientInfo getOrElse (
-            throw new Exception("Cannot initialize SocketIo connection without client Id"))
-
-        val sessionId = clientInfo.clientId
-        Logger.info(s"SocketIo session is being initiated: $sessionId [$clientInfo]")
-        val heartbeatInterval = socketIoConfig.getDuration("heartbeat.interval") getOrElse {
-          Logger.warn("Cannot find 'heartbeat.interval' parameter in socketio config, using 30 sec")
-          30.seconds
+        clientInformationProvider.getClientInfo map {
+          clientInfo =>
+            val sessionId = clientInfo.clientId
+            Logger.info(s"SocketIo session is being initiated: $sessionId [$clientInfo]")
+            val heartbeatInterval = socketIoConfig.getDuration("heartbeat.interval") getOrElse {
+              Logger.warn("Cannot find 'heartbeat.interval' parameter in socketio config, using 30 sec")
+              30.seconds
+            }
+            val connectionTimeout = socketIoConfig.getDuration("connection.timeout") getOrElse {
+              Logger.warn("Cannot find 'connection.timeout' parameter in socketio config, using 10 min")
+              10.minutes
+            }
+            Ok(s"$sessionId:${heartbeatInterval.toSeconds}:${connectionTimeout.toSeconds}:websocket")
+        } getOrElse {
+          Unauthorized
         }
-        val connectionTimeout = socketIoConfig.getDuration("connection.timeout") getOrElse {
-          Logger.warn("Cannot find 'connection.timeout' parameter in socketio config, using 10 min")
-          10.minutes
-        }
-        Ok(s"$sessionId:${heartbeatInterval.toSeconds}:${connectionTimeout.toSeconds}:websocket")
     }
   }
 
