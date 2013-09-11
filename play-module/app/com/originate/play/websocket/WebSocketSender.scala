@@ -18,6 +18,10 @@ package com.originate.play.websocket
 import scala.concurrent.duration.FiniteDuration
 
 object WebSocketSender extends WebSocketMessageSender {
+
+  def disconnect(connectionId: String): Unit =
+    ComponentRegistry.main.webSocketMessageSender.disconnect(connectionId)
+
   def send(connectionId: String, message: String): Unit =
     ComponentRegistry.main.webSocketMessageSender.send(connectionId, message)
 

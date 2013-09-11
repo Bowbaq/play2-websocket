@@ -21,6 +21,8 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.Logger
 
 trait WebSocketMessageSender {
+  def disconnect(connectionId: String)
+
   // TODO(dtarima): return status of sending the message? (we don't want to expose the actor too much)
   // TODO(dtarima): add sendAsk method?
   def send(connectionId: String, message: String): Unit
@@ -39,6 +41,13 @@ trait WebSocketMessageSenderComponentImpl extends WebSocketMessageSenderComponen
   val webSocketMessageSender: WebSocketMessageSender = new WebSocketMessageSenderImpl
 
   class WebSocketMessageSenderImpl extends WebSocketMessageSender {
+    def disconnect(connectionId: String) {
+      connectionRegistrar.find(connectionId) map {
+        clientConnection =>
+          webSocketModuleActors.findActor(clientConnection.connectionActorUrl) ! Stop
+      }
+    }
+
     def send(connectionId: String, message: String) {
       // TODO(dtarima): handle failures, like cannot find connection, cannot find actor, cannot send message (ask?)
       connectionRegistrar.find(connectionId) map {

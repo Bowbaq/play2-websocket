@@ -94,9 +94,6 @@ trait WebSocketsControllerComponentImpl
 
       connectionActorRef ? Stop map {
         case Ack => Logger.info(s"Actor stopping acknowledged $connection")
-      } onFailure {
-        // TODO(dtarima): it would leak, but is it possible?
-        case _ => Logger.error(s"Actor failed to stop $connection")
       }
     }
   }

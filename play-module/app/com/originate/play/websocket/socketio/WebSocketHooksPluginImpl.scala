@@ -37,8 +37,13 @@ class WebSocketHooksPluginImpl(val app: play.Application)
           ComponentRegistry.main.socketIoPacketSender.send(connection.connectionId, Ack(packet.messageId))
         }
 
-        val receive = ComponentRegistry.main.socketIoHooks.packetReceivedHook
-        receive(connection, packet)
+        packet match {
+          case _: Disconnect =>
+            WebSocketSender.disconnect(connection.connectionId)
+          case _ =>
+            val receive = ComponentRegistry.main.socketIoHooks.packetReceivedHook
+            receive(connection, packet)
+        }
 
       } catch {
         case e: Throwable =>
