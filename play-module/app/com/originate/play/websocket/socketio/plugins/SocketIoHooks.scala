@@ -15,10 +15,10 @@
 */
 package com.originate.play.websocket.socketio.plugins
 
-import play.api.Plugin
-import play.api.Play._
 import com.originate.play.websocket.ClientConnection
 import com.originate.play.websocket.socketio.SocketIoPacket
+import play.api.Play._
+import play.api.Plugin
 
 trait SocketIoHooks {
   def packetReceivedHook: (ClientConnection, SocketIoPacket) => Unit

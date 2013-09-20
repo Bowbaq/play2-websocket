@@ -16,8 +16,8 @@
 package com.originate.play.websocket.socketio
 
 import com.originate.play.websocket.plugins.{ConnectionRegistrarComponent, WebSocketHooksComponent, ClientInformationProviderComponent}
-import com.originate.play.websocket.{WebSocketMessageSenderComponent, WebSocketModuleActorsComponent, WebSocketModuleConfigComponent, WebSocketsControllerComponentImpl}
 import com.originate.play.websocket.socketio.plugins.{SocketIoHooksComponent, SocketIoHooksComponentImpl}
+import com.originate.play.websocket.{WebSocketMessageSenderComponent, WebSocketModuleActorsComponent, WebSocketModuleConfigComponent, WebSocketsControllerComponentImpl}
 
 trait SocketIoComponentRegistry
     extends SocketIoConfigComponent

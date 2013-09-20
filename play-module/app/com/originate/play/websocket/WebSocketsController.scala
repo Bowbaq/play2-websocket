@@ -15,17 +15,17 @@
 */
 package com.originate.play.websocket
 
-import play.api.mvc._
-import play.api.libs.iteratee.{Iteratee, Concurrent}
-import play.api.Logger
-import java.util.UUID
-import com.originate.play.websocket.plugins.{ClientInformationProviderComponent, WebSocketHooksComponent, ConnectionRegistrarComponent}
-import com.originate.utils.SystemInfo
-import scala.concurrent.duration._
 import akka.actor.ActorRef
 import akka.pattern.ask
-import play.api.libs.concurrent.Execution.Implicits._
 import akka.util.Timeout
+import com.originate.play.websocket.plugins.{ClientInformationProviderComponent, WebSocketHooksComponent, ConnectionRegistrarComponent}
+import com.originate.utils.SystemInfo
+import java.util.UUID
+import play.api.Logger
+import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.iteratee.{Iteratee, Concurrent}
+import play.api.mvc._
+import scala.concurrent.duration._
 
 trait WebSocketsController
     extends Controller {

@@ -16,8 +16,8 @@
 package com.originate.common.config
 
 import com.originate.common.BaseComponent
-import scala.concurrent.duration.{FiniteDuration, Duration}
 import java.util.concurrent.TimeUnit
+import scala.concurrent.duration.{FiniteDuration, Duration}
 
 trait Config {
   def getBoolean(path: String): Option[Boolean]

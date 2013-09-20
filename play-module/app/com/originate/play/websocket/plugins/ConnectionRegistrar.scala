@@ -15,9 +15,9 @@
 */
 package com.originate.play.websocket.plugins
 
-import play.api.Plugin
-import play.api.Play._
 import com.originate.play.websocket.ClientConnection
+import play.api.Play._
+import play.api.Plugin
 
 trait ConnectionRegistrar {
   def register(connection: ClientConnection)

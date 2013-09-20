@@ -17,10 +17,10 @@ package com.originate.play.websocket.socketio
 
 import com.originate.play.websocket.plugins.WebSocketHooksPlugin
 import com.originate.play.websocket.{WebSocketSender, ComponentRegistry, ClientConnection}
+import java.util.concurrent.TimeUnit
 import play.api.Logger
 import play.api.libs.iteratee.Enumerator
 import scala.concurrent.duration._
-import java.util.concurrent.TimeUnit
 
 class WebSocketHooksPluginImpl(val app: play.Application)
     extends WebSocketHooksPlugin {

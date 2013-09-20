@@ -15,10 +15,10 @@
 */
 package com.originate.play.websocket.socketio
 
-import play.api.mvc.{Controller, WebSocket, AnyContent, Action}
-import com.originate.play.websocket.plugins.ClientInformationProviderComponent
 import com.originate.play.websocket.WebSockets
+import com.originate.play.websocket.plugins.ClientInformationProviderComponent
 import play.api.Logger
+import play.api.mvc.{Controller, WebSocket, AnyContent, Action}
 import scala.concurrent.duration._
 
 trait SocketIoController extends Controller {

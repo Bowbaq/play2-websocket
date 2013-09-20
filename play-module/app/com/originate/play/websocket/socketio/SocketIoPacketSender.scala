@@ -15,8 +15,8 @@
 */
 package com.originate.play.websocket.socketio
 
-import com.originate.play.websocket.plugins.ConnectionRegistrarComponent
 import com.originate.play.websocket.WebSocketMessageSenderComponent
+import com.originate.play.websocket.plugins.ConnectionRegistrarComponent
 
 trait SocketIoPacketSender {
   def send(connectionId: String, packet: SocketIoPacket): Unit

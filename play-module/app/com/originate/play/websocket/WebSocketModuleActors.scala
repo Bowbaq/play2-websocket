@@ -15,17 +15,17 @@
 */
 package com.originate.play.websocket
 
-import com.originate.common.BaseComponent
 import akka.actor._
 import akka.remote.RemoteActorRefProvider
-import scala.concurrent._
-import scala.concurrent.duration._
+import com.originate.common.BaseComponent
+import com.originate.play.websocket.plugins.WebSocketHooksComponent
 import play.api.Logger
+import play.api.Play.current
+import play.api.libs.concurrent.Akka
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.iteratee.Concurrent
-import play.api.libs.concurrent.Akka
-import play.api.Play.current
-import com.originate.play.websocket.plugins.WebSocketHooksComponent
+import scala.concurrent._
+import scala.concurrent.duration._
 
 trait WebSocketModuleActorsComponent extends BaseComponent {
   val webSocketModuleActors: WebSocketModuleActors

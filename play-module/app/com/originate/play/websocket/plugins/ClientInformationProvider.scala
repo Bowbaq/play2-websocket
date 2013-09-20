@@ -15,10 +15,10 @@
 */
 package com.originate.play.websocket.plugins
 
-import play.api.mvc.RequestHeader
-import play.api.Plugin
-import play.api.Play._
 import com.originate.play.websocket.ClientInfo
+import play.api.Play._
+import play.api.Plugin
+import play.api.mvc.RequestHeader
 
 trait ClientInformationProvider {
   def getClientInfo(implicit request: RequestHeader): Option[ClientInfo]

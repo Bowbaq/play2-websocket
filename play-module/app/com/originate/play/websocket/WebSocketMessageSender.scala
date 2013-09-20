@@ -16,9 +16,9 @@
 package com.originate.play.websocket
 
 import com.originate.play.websocket.plugins.ConnectionRegistrarComponent
-import scala.concurrent.duration.FiniteDuration
-import play.api.libs.concurrent.Execution.Implicits._
 import play.api.Logger
+import play.api.libs.concurrent.Execution.Implicits._
+import scala.concurrent.duration.FiniteDuration
 
 trait WebSocketMessageSender {
   def disconnect(connectionId: String)
