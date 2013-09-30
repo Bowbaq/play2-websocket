@@ -41,9 +41,11 @@ object ApplicationBuild extends Build {
     pomExtra := (
   <url>https://github.com/Originate/play2-websocket</url>
   <licenses>
-    <name>The Apache Software License, Version 2.0</name>
-    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-    <distribution>repo</distribution>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
   </licenses>
   <scm>
     <url>git@github.com:Originate/play2-websocket.git</url>
