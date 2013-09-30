@@ -43,4 +43,9 @@ class WebSocketHooksPluginImpl(val app: play.Application)
       }
 
   }
+
+  def messageSentHook: (ClientConnection, String) => Unit = {
+    (connection: ClientConnection, message: String) =>
+      Logger.info(s"WebSocketHooksPlugin: message sent: $connection message=$message")
+  }
 }

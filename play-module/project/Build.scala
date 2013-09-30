@@ -19,7 +19,7 @@ import Keys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-websocket"
-  val appVersion      = "1.0.1-SNAPSHOT"
+  val appVersion      = "1.0.2"
 
   val appDependencies = Seq(
     "com.typesafe.akka" %% "akka-remote" % "2.1.2"

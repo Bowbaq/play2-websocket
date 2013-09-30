@@ -19,7 +19,6 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
 import com.originate.play.websocket.plugins.{ClientInformationProviderComponent, WebSocketHooksComponent, ConnectionRegistrarComponent}
-import com.originate.utils.SystemInfo
 import java.util.UUID
 import play.api.Logger
 import play.api.libs.concurrent.Execution.Implicits._
@@ -48,8 +47,6 @@ trait WebSocketsControllerComponentImpl
 
   class WebSocketsControllerImpl
       extends WebSocketsController {
-    val hostname = SystemInfo.hostname
-
     def init = WebSocket.using[String] {
       implicit request =>
         clientInformationProvider.getClientInfo map {

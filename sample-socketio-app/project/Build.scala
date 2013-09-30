@@ -12,7 +12,7 @@ object ApplicationBuild extends Build {
     "com.typesafe.slick" %% "slick" % "1.0.0",
     "com.typesafe.akka" %% "akka-remote" % "2.1.2",
     "mysql" % "mysql-connector-java" % "5.1.26",
-    "com.originate" %% "play2-websocket" % "1.0.1-SNAPSHOT"
+    "com.originate" %% "play2-websocket" % "1.0.2"
   )
 
 
