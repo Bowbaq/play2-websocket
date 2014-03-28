@@ -60,7 +60,7 @@ trait WebSocketMessageSenderComponentImpl extends WebSocketMessageSenderComponen
       connectionRegistrar.find(connectionId) map {
         clientConnection =>
           val actorRef = webSocketModuleActors.findActor(clientConnection.connectionActorUrl)
-          Logger.info(s"Schedule message to send in $delay [$connectionId]: $message")
+          Logger.debug(s"Schedule message to send in $delay [$connectionId]: $message")
           webSocketModuleActors.actorSystem.scheduler.scheduleOnce(delay, actorRef, message)
       }
     }

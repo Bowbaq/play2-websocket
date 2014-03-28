@@ -20,7 +20,7 @@ import play.api.{Logger, Plugin}
 class WebSocketModuleInitPlugin(val app: play.Application) extends Plugin {
 
   override def onStart() {
-    Logger.info("Initializing WebSocketModule")
+    Logger.debug("Initializing WebSocketModule")
     try {
       ComponentRegistry.main.onInit()
     } catch {
@@ -31,7 +31,7 @@ class WebSocketModuleInitPlugin(val app: play.Application) extends Plugin {
   }
 
   override def onStop() {
-    Logger.info("Stopping WebSocketModule")
+    Logger.debug("Stopping WebSocketModule")
     try {
       ComponentRegistry.main.onShutdown()
     } catch {

@@ -47,7 +47,7 @@ trait SocketIoControllerComponentImpl
         clientInformationProvider.getClientInfo map {
           clientInfo =>
             val sessionId = clientInfo.clientId
-            Logger.info(s"SocketIo session is being initiated: $sessionId [$clientInfo]")
+            Logger.debug(s"SocketIo session is being initiated: $sessionId [$clientInfo]")
             val heartbeatInterval = socketIoConfig.getDuration("heartbeat.interval") getOrElse {
               Logger.warn("Cannot find 'heartbeat.interval' parameter in socketio config, using 30 sec")
               30.seconds

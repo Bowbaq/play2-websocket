@@ -59,13 +59,13 @@ trait WebSocketModuleActorsComponentImpl extends WebSocketModuleActorsComponent 
         val channel: Concurrent.Channel[String]) extends Actor {
       def receive = {
         case Stop =>
-          Logger.info(s"WebSocketActor: Stop received")
+          Logger.debug(s"WebSocketActor: Stop received")
           // TODO(dtarima): do we need the ack? if yes then should it be a class with specific Stop message (unique)
           sender ! Ack
           channel.eofAndEnd()
           actorSystem.stop(self)
         case x =>
-          Logger.info(s"WebSocketActor: Message received: $x [pushing to $clientConnection]")
+          Logger.debug(s"WebSocketActor: Message received: $x [pushing to $clientConnection]")
           val message = x.toString
           channel.push(message)
           val messageSent = webSocketHooks.messageSentHook

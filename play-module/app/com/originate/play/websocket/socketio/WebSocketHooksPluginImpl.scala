@@ -29,10 +29,10 @@ class WebSocketHooksPluginImpl(val app: play.Application)
 
   def messageReceivedHook: (ClientConnection, String) => Unit = {
     (connection: ClientConnection, message: String) =>
-      Logger.info(s"WebSocketHooksPlugin: packet received: $connection packet=$message")
+      Logger.debug(s"WebSocketHooksPlugin: packet received: $connection packet=$message")
       try {
         val packet = SocketIoPacket(message)
-        Logger.info(s"Received: $packet")
+        Logger.debug(s"Received: $packet")
         if (packet.isAckRequested) {
           ComponentRegistry.main.socketIoPacketSender.send(connection.connectionId, Ack(packet.messageId))
         }

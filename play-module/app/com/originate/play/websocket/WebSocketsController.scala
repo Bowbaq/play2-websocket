@@ -58,18 +58,18 @@ trait WebSocketsControllerComponentImpl
             val connection = ClientConnection(clientInfo, connectionId, actorAddress)
             val connectionActorRef = webSocketModuleActors.newActor(connection, channel)
 
-            Logger.info(s"WebSocket init $connection called from ${request.headers.get("X-Forwarded-For")}")
+            Logger.debug(s"WebSocket init $connection called from ${request.headers.get("X-Forwarded-For")}")
 
             val in = Iteratee.foreach[String] {
               msg =>
-                Logger.info(s"Message received $connection: $msg")
+                Logger.debug(s"Message received $connection: $msg")
                 val receive = webSocketHooks.messageReceivedHook
                 receive(connection, msg)
             }.mapDone {
               _ =>
                 connectionRegistrar.deregister(connection)
                 shutdown(connection, connectionActorRef)
-                Logger.info(s"Client disconnected $connection")
+                Logger.debug(s"Client disconnected $connection")
             }
 
             connectionRegistrar.register(connection)
@@ -90,7 +90,7 @@ trait WebSocketsControllerComponentImpl
       implicit val timeout = Timeout(timeoutDuration)
 
       connectionActorRef ? Stop map {
-        case Ack => Logger.info(s"Actor stopping acknowledged $connection")
+        case Ack => Logger.debug(s"Actor stopping acknowledged $connection")
       }
     }
   }
